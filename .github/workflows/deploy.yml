@@ -32,6 +32,9 @@ jobs:
       - name: Publish
         run: dotnet publish src/FreeMobileSms.App/FreeMobileSms.App.csproj -c Release -o release
 
+      - name: Rewrite base href for GitHub Pages
+        run: sed -i 's|<base href="/" />|<base href="/FreeMobileSms/" />|' release/wwwroot/index.html
+
       - name: Add .nojekyll
         run: touch release/wwwroot/.nojekyll
 
