@@ -98,6 +98,11 @@
 
     private async Task SendSms()
     {
+        if (isSending)
+        {
+            return; // Prevent double submission
+        }
+
         isSending = true;
         result = null;
 
