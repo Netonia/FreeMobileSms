@@ -1,0 +1,133 @@
+@page "/"
+@using FreeMobileSms.App.Models
+@using FreeMobileSms.App.Services
+@inject FreeMobileSmsService SmsService
+@inject IJSRuntime JS
+
+<PageTitle>Free Mobile SMS</PageTitle>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <h1 class="text-center mb-4">📱 Free Mobile SMS</h1>
+            <p class="text-center text-muted mb-4">Envoyez un SMS de test via l'API Free Mobile.</p>
+
+            <EditForm Model="@model" OnValidSubmit="SendSms" FormName="smsForm">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label for="user" class="form-label">Identifiant Free Mobile</label>
+                    <InputText id="user" class="form-control" @bind-Value="model.User" placeholder="Ex : 12345678" />
+                    <ValidationMessage For="@(() => model.User)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="apiKey" class="form-label">Clé API</label>
+                    <InputText id="apiKey" type="password" class="form-control" @bind-Value="model.ApiKey" placeholder="Votre clé API Free Mobile" />
+                    <ValidationMessage For="@(() => model.ApiKey)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message <span class="text-muted">(@((model.Message ?? string.Empty).Length)/160)</span></label>
+                    <InputTextArea id="message" class="form-control" @bind-Value="model.Message" rows="3" placeholder="Votre message (160 caractères max)" />
+                    <ValidationMessage For="@(() => model.Message)" />
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="saveCredentials" @bind="saveCredentials" />
+                    <label class="form-check-label" for="saveCredentials">Sauvegarder les identifiants localement</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" disabled="@isSending">
+                    @if (isSending)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>Envoi en cours...</span>
+                    }
+                    else
+                    {
+                        <span>📤 Envoyer le SMS</span>
+                    }
+                </button>
+            </EditForm>
+
+            @if (result is not null)
+            {
+                <div class="alert @(result.Success ? "alert-success" : "alert-danger") mt-3" role="alert">
+                    @result.Message
+                </div>
+            }
+
+            <div class="alert alert-warning mt-3" role="alert">
+                <strong>⚠️ Sécurité :</strong> Vos identifiants sont envoyés directement depuis votre navigateur vers l'API Free Mobile.
+                Ils ne transitent par aucun serveur intermédiaire.
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private SmsModel model = new();
+    private SmsResult? result;
+    private bool isSending;
+    private bool saveCredentials;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var user = await JS.InvokeAsync<string>("localStorage.getItem", "freemobile_user");
+                var apiKey = await JS.InvokeAsync<string>("localStorage.getItem", "freemobile_apikey");
+
+                if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(apiKey))
+                {
+                    model.User = user;
+                    model.ApiKey = apiKey;
+                    saveCredentials = true;
+                    StateHasChanged();
+                }
+            }
+            catch
+            {
+                // localStorage might not be available
+            }
+        }
+    }
+
+    private async Task SendSms()
+    {
+        if (isSending)
+        {
+            return; // Prevent double submission
+        }
+
+        isSending = true;
+        result = null;
+
+        try
+        {
+            if (saveCredentials)
+            {
+                await JS.InvokeVoidAsync("localStorage.setItem", "freemobile_user", model.User);
+                await JS.InvokeVoidAsync("localStorage.setItem", "freemobile_apikey", model.ApiKey);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("localStorage.removeItem", "freemobile_user");
+                await JS.InvokeVoidAsync("localStorage.removeItem", "freemobile_apikey");
+            }
+
+            result = await SmsService.SendAsync(model.User, model.ApiKey, model.Message);
+        }
+        catch (Exception ex)
+        {
+            result = new SmsResult(false, $"Erreur : {ex.Message}");
+        }
+        finally
+        {
+            isSending = false;
+        }
+    }
+}
