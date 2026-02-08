@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="message" class="form-label">Message <span class="text-muted">(@model.Message.Length/160)</span></label>
+                    <label for="message" class="form-label">Message <span class="text-muted">(@((model.Message ?? string.Empty).Length)/160)</span></label>
                     <InputTextArea id="message" class="form-control" @bind-Value="model.Message" rows="3" placeholder="Votre message (160 caractères max)" />
                     <ValidationMessage For="@(() => model.Message)" />
                 </div>
