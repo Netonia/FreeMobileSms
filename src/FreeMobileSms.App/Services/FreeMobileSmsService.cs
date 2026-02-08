@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
 
 namespace FreeMobileSms.App.Services;
 
@@ -14,19 +13,20 @@ public class FreeMobileSmsService
 
     public async Task<SmsResult> SendAsync(string user, string apiKey, string message)
     {
-        var request = new { user, apiKey, message };
-        
+        var url = $"https://smsapi.free-mobile.fr/sendmsg?user={Uri.EscapeDataString(user)}&pass={Uri.EscapeDataString(apiKey)}&msg={Uri.EscapeDataString(message)}";
+
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/sms/send", request);
+            var response = await _httpClient.GetAsync(url);
 
-            if (response.IsSuccessStatusCode)
+            return response.StatusCode switch
             {
-                var content = await response.Content.ReadFromJsonAsync<SmsResult>();
-                return content;
-            }
-            
-            return new SmsResult(false, "Erreur lors de l'envoi du SMS.");
+                HttpStatusCode.OK => new SmsResult(true, "SMS envoyé avec succès !"),
+                HttpStatusCode.BadRequest => new SmsResult(false, "Erreur 400 : un paramètre est manquant."),
+                HttpStatusCode.Forbidden => new SmsResult(false, "Erreur 403 : identifiant ou clé API incorrect, ou service non activé."),
+                HttpStatusCode.InternalServerError => new SmsResult(false, "Erreur 500 : erreur côté serveur Free Mobile."),
+                _ => new SmsResult(false, $"Erreur inattendue : {(int)response.StatusCode} {response.ReasonPhrase}")
+            };
         }
         catch (HttpRequestException ex)
         {
