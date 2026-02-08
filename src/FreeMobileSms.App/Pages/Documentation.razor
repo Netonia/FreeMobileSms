@@ -1,0 +1,84 @@
+@page "/documentation"
+
+<PageTitle>Documentation - Free Mobile SMS</PageTitle>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <h1 class="mb-4">📖 Documentation</h1>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Activer l'API SMS Free Mobile</h5>
+                    <ol>
+                        <li>Connectez-vous à votre <a href="https://mobile.free.fr/account/" target="_blank" rel="noopener noreferrer">Espace Abonné Free Mobile</a>.</li>
+                        <li>Allez dans <strong>Mes Options</strong>.</li>
+                        <li>Activez l'option <strong>Notifications par SMS</strong>.</li>
+                        <li>Une clé API vous sera attribuée. Notez-la précieusement.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Comment utiliser cette application</h5>
+                    <ol>
+                        <li>Renseignez votre <strong>identifiant Free Mobile</strong> (numéro à 8 chiffres).</li>
+                        <li>Entrez votre <strong>clé API</strong> obtenue depuis l'espace abonné.</li>
+                        <li>Rédigez votre <strong>message</strong> (160 caractères maximum).</li>
+                        <li>Cliquez sur <strong>Envoyer le SMS</strong>.</li>
+                    </ol>
+                    <p class="text-muted">Le SMS sera envoyé à votre propre numéro Free Mobile.</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Codes de réponse de l'API</h5>
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Signification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-success">200</span></td>
+                                <td>SMS envoyé avec succès</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-danger">400</span></td>
+                                <td>Paramètre manquant</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-danger">403</span></td>
+                                <td>Identifiant ou clé API incorrect / service non activé</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning text-dark">500</span></td>
+                                <td>Erreur serveur Free Mobile</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Exemples de messages</h5>
+                    <ul class="mb-0">
+                        <li><code>Test API Free Mobile - Envoi réussi !</code></li>
+                        <li><code>Alerte : seuil dépassé à 14h30</code></li>
+                        <li><code>Rappel : réunion demain 9h</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>ℹ️ Note :</strong> L'API Free Mobile permet uniquement d'envoyer des SMS à votre propre numéro.
+                Il ne s'agit pas d'un service d'envoi de SMS vers des tiers.
+            </div>
+        </div>
+    </div>
+</div>
