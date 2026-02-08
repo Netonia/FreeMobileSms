@@ -7,7 +7,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient());
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:53768/") });
 builder.Services.AddScoped<FreeMobileSmsService>();
 
 await builder.Build().RunAsync();

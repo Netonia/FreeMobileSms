@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/FreeMobileSms.Api/FreeMobileSms.Api.csproj" />
     <Project Path="src/FreeMobileSms.App/FreeMobileSms.App.csproj" />
   </Folder>
 </Solution>
